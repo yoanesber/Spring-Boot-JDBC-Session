@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS your_schema.spring_session_attributes (
 
 ## 🛠️ Installation & Setup
 A step by step series of examples that tell you how to get a development env running.  
-1. Ensure you have **Git installed on your Windows** machine, then clone the repository to your local environment:
+1. Ensure you have **Git installed on your Windows** machine, then clone the repository to your local environment:  
 ```bash
 git clone https://github.com/yoanesber/Spring-Boot-JDBC-Session.git
 cd Spring-Boot-JDBC-Session
@@ -281,13 +281,13 @@ Set the `MAX_ATTEMPT_LOGIN` value in `.env.development` to define the number of 
 MAX_ATTEMPT_LOGIN=3
 ```
 
-3. Run the application locally  
+4. Run the application locally  
 Make sure PostgreSQL is running, then execute:
 ```bash
 mvn spring-boot:run
 ```
 
-4. Now, application is available at:
+5. Now, application is available at:
 ```bash
 http://localhost:8081/
 ```
