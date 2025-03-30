@@ -300,12 +300,15 @@ http://localhost:8081/
 ## 🧪Testing Scenarios
 1. Test Account Locking
 When a user enters incorrect login credentials, the system displays an error message indicating invalid username or password.
+
 ![Invalid username or password](https://github.com/user-attachments/assets/d4d29ed1-66c2-4cf4-909b-a381663ce741)
 
 If a user repeatedly enters incorrect credentials beyond the allowed limit (`MAX_ATTEMPT_LOGIN`), the system locks the account.
+
 ![User account is locked](https://github.com/user-attachments/assets/0b0fd5d3-844d-4b29-8503-69f9ffff75ff)
 
 Once the failed login attempts reach the limit (`MAX_ATTEMPT_LOGIN`), the system will automatically set `is_account_non_locked = false` in the database, preventing further login attempts. 
+
 ![is_account_non_locked is false](https://github.com/user-attachments/assets/961b7c8c-ac42-4d2a-9ccb-de8e4db52e26)
 
 **Note**: To unlock an account, you can manually update the user record in PostgreSQL by resetting the `is_account_non_locked` field to `true`.
@@ -313,53 +316,55 @@ Once the failed login attempts reach the limit (`MAX_ATTEMPT_LOGIN`), the system
 2. Test authentication failure responses for:
 - **Disabled User Attempting Login**
 If a user account is disabled (i.e., `is_enabled = false` in the database), any login attempt will be rejected. The system displays a message indicating that the account is disabled, preventing the user from accessing the portal until an administrator reactivates the account.
+
 ![Manually update is_enabled to false](https://github.com/user-attachments/assets/f8215e8f-34d5-439c-98c9-506f6fd6811b)
+
 ![User is disabled](https://github.com/user-attachments/assets/4a12354b-329c-4b7f-a70d-acca22c30c10)
 
 - **Expired Credentials Attempting Login**
-If a user’s credentials have expired (`is_credentials_non_expired = false` in the database), the system prevents authentication and prompts the user to update their password. This ensures that old or potentially compromised credentials are not used indefinitely.
-![Manually update is_credentials_non_expired to false](https://github.com/user-attachments/assets/41769866-9298-4b73-a209-c9eaf88e9c2c)
-![User credentials have expired](https://github.com/user-attachments/assets/ac76e1c1-3daa-482b-91ec-1474c7b20250)
+If a user’s credentials have expired (`is_credentials_non_expired = false` in the database), the system prevents authentication and prompts the user to update their password. This ensures that old or potentially compromised credentials are not used indefinitely.  
+![Manually update is_credentials_non_expired to false](https://github.com/user-attachments/assets/41769866-9298-4b73-a209-c9eaf88e9c2c)  
+![User credentials have expired](https://github.com/user-attachments/assets/ac76e1c1-3daa-482b-91ec-1474c7b20250)  
 
 - **Expired Account Attempting Login**
-If an account has expired (`is_account_non_expired = false` in the database), the user will be unable to log in, and the system will notify them that their account is no longer valid. Administrators may extend the account expiration date to restore access.
-![Manually update is_account_non_expired to false](https://github.com/user-attachments/assets/68b82110-4b66-4104-99af-2bfc66ee6b05)
-![User account has expired](https://github.com/user-attachments/assets/704498de-f892-48e5-bb85-8e5dab598822)
+If an account has expired (`is_account_non_expired = false` in the database), the user will be unable to log in, and the system will notify them that their account is no longer valid. Administrators may extend the account expiration date to restore access.  
+![Manually update is_account_non_expired to false](https://github.com/user-attachments/assets/68b82110-4b66-4104-99af-2bfc66ee6b05)  
+![User account has expired](https://github.com/user-attachments/assets/704498de-f892-48e5-bb85-8e5dab598822)  
 
 3. Reset Last Login
-Set `last_login` to `NULL` in the database. 
-![Manually update last_login to NULL](https://github.com/user-attachments/assets/d4b35bc4-18d8-43f7-a91b-fe3c2801f40f)
+Set `last_login` to `NULL` in the database.  
+![Manually update last_login to NULL](https://github.com/user-attachments/assets/d4b35bc4-18d8-43f7-a91b-fe3c2801f40f)  
 
-`Re-login` and confirm that the system redirects to the force password change page.
-![Force password change page](https://github.com/user-attachments/assets/26b90af2-e7d5-4bae-bcf5-75d5ec5fc2eb)
+`Re-login` and confirm that the system redirects to the force password change page.  
+![Force password change page](https://github.com/user-attachments/assets/26b90af2-e7d5-4bae-bcf5-75d5ec5fc2eb)  
 
 4. Test Force Password Change Validation
-Submit the password change form with mismatched `new password` and `confirm password` fields to trigger validation errors.
-![New password and confirm password do not match](https://github.com/user-attachments/assets/6f96d075-0d10-41f8-b707-ecf951ddc7dc)
+Submit the password change form with mismatched `new password` and `confirm password` fields to trigger validation errors.  
+![New password and confirm password do not match](https://github.com/user-attachments/assets/6f96d075-0d10-41f8-b707-ecf951ddc7dc)  
 
-Submit a valid and correctly matched `new password` and `confirm password` to successfully update the password
-![Password changed successfully](https://github.com/user-attachments/assets/0f100b2c-916b-4ff6-81a5-71d1e2816d37)
+Submit a valid and correctly matched `new password` and `confirm password` to successfully update the password  
+![Password changed successfully](https://github.com/user-attachments/assets/0f100b2c-916b-4ff6-81a5-71d1e2816d37)  
 
 5. Test CSRF Protection
-- Remove the CSRF token via browser inspect element.
-![Delete element - csrf](https://github.com/user-attachments/assets/1aa5ff64-0ea3-4d94-a27f-8a1825e5bdc0)
+- Remove the CSRF token via browser inspect element.  
+![Delete element - csrf](https://github.com/user-attachments/assets/1aa5ff64-0ea3-4d94-a27f-8a1825e5bdc0)  
 
-- Submit a valid password change request and verify that it is rejected with a 403 Forbidden response.
-![Force change password with no csrf response](https://github.com/user-attachments/assets/63dda5f6-484e-405b-9518-ab7adfa6216b)
+- Submit a valid password change request and verify that it is rejected with a 403 Forbidden response.  
+![Force change password with no csrf response](https://github.com/user-attachments/assets/63dda5f6-484e-405b-9518-ab7adfa6216b)  
 
 **Note**: If a user manually removes the CSRF token from the request (e.g., via browser developer tools), the system will detect the missing token and reject the request with a `403 Forbidden` error, ensuring protection against cross-site request forgery attacks.
 
 6. Test Logout
-- Logout from the application
-![Logout from the application](https://github.com/user-attachments/assets/bb73ad8c-600c-4351-a951-ba7cbe3b9b2c)
+- Logout from the application  
+![Logout from the application](https://github.com/user-attachments/assets/bb73ad8c-600c-4351-a951-ba7cbe3b9b2c)  
 
-**Note**: When a user logs out, their session is removed from the `spring_session` table in PostgreSQL. This ensures that logged-out users cannot reuse an old session to gain access.
+**Note**: When a user logs out, their session is removed from the `spring_session` table in PostgreSQL. This ensures that logged-out users cannot reuse an old session to gain access.  
 
 7. Test Successful Password Change and Re-login
-Confirm that the force password change process is completed and the user is redirected to the dashboard.
-![Dashboard page](https://github.com/user-attachments/assets/2cd2d623-10bf-466f-8b31-c9d129aafc3e)
-![spring_session table](https://github.com/user-attachments/assets/92bd9ce9-584a-4afd-bf3c-438c82403b4c)
-![spring_session_attributes table](https://github.com/user-attachments/assets/4a653e83-b0e4-4cab-a109-1f9cd829949c)
+Confirm that the force password change process is completed and the user is redirected to the dashboard.  
+![Dashboard page](https://github.com/user-attachments/assets/2cd2d623-10bf-466f-8b31-c9d129aafc3e)  
+![spring_session table](https://github.com/user-attachments/assets/92bd9ce9-584a-4afd-bf3c-438c82403b4c)  
+![spring_session_attributes table](https://github.com/user-attachments/assets/4a653e83-b0e4-4cab-a109-1f9cd829949c)  
 
 ---
 
