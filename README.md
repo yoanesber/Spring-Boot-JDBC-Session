@@ -323,7 +323,7 @@ If an account has expired (`is_account_non_expired = false` in the database), th
 ![Manually update is_account_non_expired to false](https://github.com/user-attachments/assets/68b82110-4b66-4104-99af-2bfc66ee6b05)  
 ![User account has expired](https://github.com/user-attachments/assets/704498de-f892-48e5-bb85-8e5dab598822)  
 
-3. Reset Last Login  
+3. Test Resetting Last Login to Trigger Force Password Change  
 Set `last_login` to `NULL` in the database.  
 ![Manually update last_login to NULL](https://github.com/user-attachments/assets/d4b35bc4-18d8-43f7-a91b-fe3c2801f40f)  
 
