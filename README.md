@@ -59,7 +59,7 @@ form-auth-demo/
 
 ## ⚙ Environment Configuration
 Configuration values are stored in `.env.development` and referenced in `application.properties`.  
-Example `.env.development` file content:
+Example `.env.development` file content:  
 ```properties
 # Application properties
 APP_PORT=8081
@@ -264,7 +264,7 @@ cd Spring-Boot-JDBC-Session
 
 2. Set up PostgreSQL 
 - Run the provided DDL script to set up the database schema
-- Configure the connection in `.env.development` file:
+- Configure the connection in `.env.development` file:  
 ```properties
 # Database properties
 SPRING_DATASOURCE_PORT=5432
