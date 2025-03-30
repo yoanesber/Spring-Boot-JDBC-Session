@@ -363,10 +363,10 @@ Confirm that the force password change process is completed and the user is redi
 ## 📝 Notes & Future Enhancements
 This project provides a robust authentication system using **Spring Security with JDBC Session**, ensuring session persistence in the database while enforcing security policies such as CSRF protection and account lockout mechanisms. Below are some important notes about the implementation and possible future enhancements.  
 To further improve security and usability, the following features could be added:  
-- **Admin User Management**: Implement an admin panel where administrators can **unlock accounts, extend credentials and account expiration, and enable or disable user accounts**.
-- **Session Monitoring**: Provide an admin panel to view active user sessions stored in the `spring_session` table. Admins should have the ability to terminate specific sessions to enforce security policies.
-- **Automated Email Notifications**: Introduce an email notification service to inform users when their accounts are locked, passwords are changed, or their credentials/accounts are about to expire. This feature could be implemented using an **asynchronous** approach such as **Redis (Publisher/Subscriber)** or a scheduled task to send timely alerts.
-- **Security Logs for Admins**: Implement a logging system that captures security-related events, such as **authentication failures, account status changes, and security-related events**. These logs should be accessible only to administrators for auditing and monitoring purposes.
+- **Admin User Management** – Implement an admin panel where administrators can **unlock accounts, extend credentials and account expiration, and enable or disable user accounts**.
+- **Session Monitoring** – Provide an admin panel to view active user sessions stored in the `spring_session` table. Admins should have the ability to terminate specific sessions to enforce security policies.
+- **Automated Email Notifications** – Introduce an email notification service to inform users when their accounts are locked, passwords are changed, or their credentials/accounts are about to expire. This feature could be implemented using an **asynchronous** approach such as **Redis (Publisher/Subscriber)** or a scheduled task to send timely alerts.
+- **Security Logs for Admins** – Implement a logging system that captures security-related events, such as **authentication failures, account status changes, and security-related events**. These logs should be accessible only to administrators for auditing and monitoring purposes.
 ---
 
 ## 🔗 Related Repositories
