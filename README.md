@@ -6,7 +6,7 @@ This project is a Spring web application demonstrating **Form-Based Authenticati
 Additionally, this project uses **SB Admin Bootstrap Template** for the frontend UI, enhancing the user experience with a modern, responsive design.
 
 ### 🗄️ Using Session JDBC
-Spring Session JDBC is used to persist user session data in the PostgreSQL database instead of storing it in memory. This allows sessions to be retained across application restarts, improving scalability and reliability. Key advantages include:
+Spring Session JDBC is used to persist user session data in the PostgreSQL database instead of storing it in memory. This allows sessions to be retained across application restarts, improving scalability and reliability. Key advantages include: 
 - **Session Persistence** – Users remain logged in even if the application restarts.
 - **Centralized Session Management** – All active sessions are stored in the database, making it easier to track and manage.
 - **Security** – Protects against session hijacking by storing session attributes securely in the database.
@@ -31,7 +31,7 @@ Spring Session JDBC is used to persist user session data in the PostgreSQL datab
 ---
 
 ## 🤖 Tech Stack
-The technology used in this project are:
+The technology used in this project are: 
 - `Spring Boot Starter Web` – Provides essential components for building web applications, including an embedded web server and RESTful API support.
 - `Spring Security` – Provides authentication and authorization mechanisms, ensuring secure access to the application.
 - `Spring Session JDBC` – Manages user sessions in the PostgreSQL database, allowing session persistence across application restarts.
@@ -42,7 +42,7 @@ The technology used in this project are:
 ---
 
 ## 🏗️ Project Structure
-The project is organized into the following package structure:
+The project is organized into the following package structure: 
 ```bash
 form-auth-demo/
 │── src/main/java/com/yoanesber/form_auth_demo/
@@ -262,7 +262,7 @@ git clone https://github.com/yoanesber/Spring-Boot-JDBC-Session.git
 cd Spring-Boot-JDBC-Session
 ```
 
-2. Set up PostgreSQL
+2. Set up PostgreSQL 
 - Run the provided DDL script to set up the database schema
 - Configure the connection in `.env.development` file:
 ```properties
@@ -275,19 +275,19 @@ SPRING_DATASOURCE_SCHEMA=your_schema
 ```
 
 3. Configure Login Attempt Limit  
-Set the `MAX_ATTEMPT_LOGIN` value in `.env.development` to define the number of failed login attempts before an account is locked. This helps in testing without waiting too long.
+Set the `MAX_ATTEMPT_LOGIN` value in `.env.development` to define the number of failed login attempts before an account is locked. This helps in testing without waiting too long.  
 ```properties
 # Security properties
 MAX_ATTEMPT_LOGIN=3
 ```
 
 4. Run the application locally  
-Make sure PostgreSQL is running, then execute:
+Make sure PostgreSQL is running, then execute:  
 ```bash
 mvn spring-boot:run
 ```
 
-5. Now, application is available at:
+5. Now, application is available at:  
 ```bash
 http://localhost:8081/
 ```
