@@ -31,7 +31,7 @@ Spring Session JDBC is used to persist user session data in the PostgreSQL datab
 ---
 
 ## 🤖 Tech Stack
-The technology used in this project are: 
+The technology used in this project are:  
 - `Spring Boot Starter Web` – Provides essential components for building web applications, including an embedded web server and RESTful API support.
 - `Spring Security` – Provides authentication and authorization mechanisms, ensuring secure access to the application.
 - `Spring Session JDBC` – Manages user sessions in the PostgreSQL database, allowing session persistence across application restarts.
@@ -42,7 +42,7 @@ The technology used in this project are:
 ---
 
 ## 🏗️ Project Structure
-The project is organized into the following package structure: 
+The project is organized into the following package structure:  
 ```bash
 form-auth-demo/
 │── src/main/java/com/yoanesber/form_auth_demo/
