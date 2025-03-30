@@ -1,18 +1,18 @@
 # Spring Web Application with JDBC Session
 
-## 📖Overview
+## 📖 Overview
 This project is a Spring web application demonstrating **Form-Based Authentication** with **JDBC Session**. User sessions are stored in a **PostgreSQL** database. The application implements **user authentication, password management, and account security** features.  
 
 Additionally, this project uses **SB Admin Bootstrap Template** for the frontend UI, enhancing the user experience with a modern, responsive design.
 
-### 🗄️Using Session JDBC
+### 🗄️ Using Session JDBC
 Spring Session JDBC is used to persist user session data in the PostgreSQL database instead of storing it in memory. This allows sessions to be retained across application restarts, improving scalability and reliability. Key advantages include:
 - **Session Persistence** – Users remain logged in even if the application restarts.
 - **Centralized Session Management** – All active sessions are stored in the database, making it easier to track and manage.
 - **Security** – Protects against session hijacking by storing session attributes securely in the database.
 - **Scalability** – Suitable for distributed applications where multiple instances of the app need shared session access.
 
-### 🚀Features
+### 🚀 Features
 - **User Authentication** – Authentication is handled using `DaoAuthenticationProvider`, which loads user details from the database via `UserDetailsService` and verifies passwords using `PasswordEncoder`.
 - **JDBC Session Management** – User session data is stored in a **PostgreSQL** database.
 - **Force Password Change** – First-time users must change their password before accessing the portal.
@@ -22,7 +22,7 @@ Spring Session JDBC is used to persist user session data in the PostgreSQL datab
 - **CSRF Protection** – CSRF tokens are stored in `HttpSession` to prevent **cross-site request forgery** attacks.
 - **Strict Content Security Policy (CSP)** – Enforces a strict content security policy to mitigate **XSS** attacks.
 
-### 🔐Authentication Flow
+### 🔐 Authentication Flow
 1. Users log in via the login form.
 2. Credentials are verified using `DaoAuthenticationProvider`.
 3. On first login, users are forced to change their password.
@@ -30,7 +30,7 @@ Spring Session JDBC is used to persist user session data in the PostgreSQL datab
 5. After `n` failed login attempts, the account is locked.
 ---
 
-## 🤖Tech Stack
+## 🤖 Tech Stack
 The technology used in this project are:
 - `Spring Boot Starter Web` – Provides essential components for building web applications, including an embedded web server and RESTful API support.
 - `Spring Security` – Provides authentication and authorization mechanisms, ensuring secure access to the application.
@@ -41,7 +41,7 @@ The technology used in this project are:
 - `Lombok` – Reducing boilerplate code
 ---
 
-## 🏗️Project Structure
+## 🏗️ Project Structure
 The project is organized into the following package structure:
 ```bash
 form-auth-demo/
@@ -57,7 +57,7 @@ form-auth-demo/
 ```
 ---
 
-## ⚙Environment Configuration
+## ⚙ Environment Configuration
 Configuration values are stored in `.env.development` and referenced in `application.properties`.  
 Example `.env.development` file content:
 ```properties
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS your_schema.spring_session_attributes (
 ```
 ---
 
-## 🛠️Installation & Setup
+## 🛠️ Installation & Setup
 A step by step series of examples that tell you how to get a development env running.  
 1. Ensure you have **Git installed on your Windows** machine, then clone the repository to your local environment:
 ```bash
@@ -294,7 +294,7 @@ http://localhost:8081/
 
 ---
 
-## 🧪Testing Scenarios
+## 🧪 Testing Scenarios
 1. Test Account Locking  
 When a user enters incorrect login credentials, the system displays an error message indicating invalid username or password.  
 ![Invalid username or password](https://github.com/user-attachments/assets/d4d29ed1-66c2-4cf4-909b-a381663ce741)  
@@ -360,10 +360,15 @@ Confirm that the force password change process is completed and the user is redi
 
 ---
 
-## 📝Notes & Future Enhancements
+## 📝 Notes & Future Enhancements
 This project provides a robust authentication system using **Spring Security with JDBC Session**, ensuring session persistence in the database while enforcing security policies such as CSRF protection and account lockout mechanisms. Below are some important notes about the implementation and possible future enhancements.  
 To further improve security and usability, the following features could be added:  
 - **Admin User Management**: Implement an admin panel where administrators can **unlock accounts, extend credentials and account expiration, and enable or disable user accounts**.
 - **Session Monitoring**: Provide an admin panel to view active user sessions stored in the `spring_session` table. Admins should have the ability to terminate specific sessions to enforce security policies.
 - **Automated Email Notifications**: Introduce an email notification service to inform users when their accounts are locked, passwords are changed, or their credentials/accounts are about to expire. This feature could be implemented using an **asynchronous** approach such as **Redis (Publisher/Subscriber)** or a scheduled task to send timely alerts.
 - **Security Logs for Admins**: Implement a logging system that captures security-related events, such as **authentication failures, account status changes, and security-related events**. These logs should be accessible only to administrators for auditing and monitoring purposes.
+---
+
+## 🔗 Related Repositories
+- JWT Authentication with Kong GitHub Repository, check out [Spring Boot Department API with Kong JWT Authentication (DB-Backed Mode)](https://github.com/yoanesber/Spring-Boot-JWT-Auth-Kong).
+- REST API with JWT Authentication Repository, check out [Netflix Shows REST API with JWT Authentication](https://github.com/yoanesber/Spring-Boot-JWT-Auth-PostgreSQL).
