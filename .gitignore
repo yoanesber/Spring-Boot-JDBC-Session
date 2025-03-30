@@ -1,0 +1,103 @@
+HELP.md
+
+### Ignore Maven target folder ###
+target/
+
+### Ignore target folder in src/main and src/test ###
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Ignore .mvn wrapper files ###
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Ignore Gradle wrapper files ###
+gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+
+### Ignore Eclipse files ###
+.classpath
+.project
+.settings/
+
+### Ignore IntelliJ IDEA files ###
+*.iml
+*.ipr
+*.iws
+.idea/
+
+### Ignore NetBeans files ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### Ignore Visual Studio Code files ###
+.vscode/
+
+### Ignore Spring Tool Suite files ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### Ignore logs ###
+logs/
+*.log
+hs_err_pid*
+*.swp
+
+### Ignore temporary files ###
+*.tmp
+*.temp
+
+### Ignore package files ###
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Ignore generated files ###
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+/generated/
+/generated-sources/
+/generated-test-sources/
+
+### Ignore dependency caches ###
+.m2/
+
+### Ignore build artifacts ###
+/bin/
+/build/
+
+### Ignore environment/config files ###
+.env
+.env.development
+.env.testing
+.env.production
+application.properties
+application-dev.properties
+application-test.properties
+application-prod.properties
+
+### Ignore local database files ###
+*.db
+*.h2.db
+*.mv.db
+
+### Ignore OS-specific files ###
+.DS_Store
+Thumbs.db
