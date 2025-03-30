@@ -1,26 +1,26 @@
 # Spring Web Application with JDBC Session
 
 ## 📖Overview
-This project is a Spring web application demonstrating form-based authentication with JDBC Session. User sessions are stored in a PostgreSQL database. The application implements user authentication, password management, and account security features.  
+This project is a Spring web application demonstrating **Form-Based Authentication** with **JDBC Session**. User sessions are stored in a **PostgreSQL** database. The application implements **user authentication, password management, and account security** features.  
+
 Additionally, this project uses **SB Admin Bootstrap Template** for the frontend UI, enhancing the user experience with a modern, responsive design.
 
 ### 🗄️Using Session JDBC
 Spring Session JDBC is used to persist user session data in the PostgreSQL database instead of storing it in memory. This allows sessions to be retained across application restarts, improving scalability and reliability. Key advantages include:
-- **Session Persistence**: Users remain logged in even if the application restarts.
-- **Centralized Session Management**: All active sessions are stored in the database, making it easier to track and manage.
-- **Security**: Protects against session hijacking by storing session attributes securely in the database
-- **Scalability**: Suitable for distributed applications where multiple instances of the app need shared session access.
-
+- **Session Persistence** – Users remain logged in even if the application restarts.
+- **Centralized Session Management** – All active sessions are stored in the database, making it easier to track and manage.
+- **Security** – Protects against session hijacking by storing session attributes securely in the database.
+- **Scalability** – Suitable for distributed applications where multiple instances of the app need shared session access.
 
 ### 🚀Features
-- ✅ **User Authentication**: Authentication is handled using `DaoAuthenticationProvider`, which loads user details from the database via `UserDetailsService` and verifies passwords using `PasswordEncoder`.
-- ✅ **JDBC Session Management**: User session data is stored in a **PostgreSQL** database.
-- ✅ **Force Password Change**: First-time users must change their password before accessing the portal.
-- ✅ **Account Locking**: Accounts are locked after `n` consecutive failed login attempts due to bad credentials.
-- ✅ **Thymeleaf Integration**: The frontend is built using **Thymeleaf** for **server-side rendering**.
-- ✅ **Dashboard**: Authenticated users are redirected to a dashboard after a successful login.
-- ✅ **CSRF Protection**: CSRF tokens are stored in `HttpSession` to prevent **cross-site request forgery** attacks.
-- ✅ **Strict Content Security Policy (CSP)**: Enforces a strict content security policy to mitigate **XSS** attacks.
+- **User Authentication** – Authentication is handled using `DaoAuthenticationProvider`, which loads user details from the database via `UserDetailsService` and verifies passwords using `PasswordEncoder`.
+- **JDBC Session Management** – User session data is stored in a **PostgreSQL** database.
+- **Force Password Change** – First-time users must change their password before accessing the portal.
+- **Account Locking** – Accounts are locked after `n` consecutive failed login attempts due to bad credentials.
+- **Thymeleaf Integration** – The frontend is built using **Thymeleaf** for **server-side rendering**.
+- **Dashboard** – Authenticated users are redirected to a dashboard after a successful login.
+- **CSRF Protection** – CSRF tokens are stored in `HttpSession` to prevent **cross-site request forgery** attacks.
+- **Strict Content Security Policy (CSP)** – Enforces a strict content security policy to mitigate **XSS** attacks.
 
 ### 🔐Authentication Flow
 1. Users log in via the login form.
@@ -58,8 +58,7 @@ form-auth-demo/
 ---
 
 ## ⚙Environment Configuration
-Configuration values are stored in `.env.development` and referenced in `application.properties`.
-
+Configuration values are stored in `.env.development` and referenced in `application.properties`.  
 Example `.env.development` file content:
 ```properties
 # Application properties
@@ -147,8 +146,7 @@ spring.thymeleaf.prefix=classpath:/templates/
 ---
 
 ## 💾 Database Schema (DDL – PostgreSQL)
-The following is the database schema for the PostgreSQL database used in this project:
-
+The following is the database schema for the PostgreSQL database used in this project:  
 ```sql
 CREATE SCHEMA your_schema;
 
@@ -257,8 +255,7 @@ CREATE TABLE IF NOT EXISTS your_schema.spring_session_attributes (
 ---
 
 ## 🛠️Installation & Setup
-A step by step series of examples that tell you how to get a development env running.
-
+A step by step series of examples that tell you how to get a development env running.  
 1. Ensure you have **Git installed on your Windows** machine, then clone the repository to your local environment:
 ```bash
 git clone https://github.com/yoanesber/Spring-Boot-JDBC-Session.git
