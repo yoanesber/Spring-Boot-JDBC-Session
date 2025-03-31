@@ -341,7 +341,7 @@ Submit a valid and correctly matched `new password` and `confirm password` to su
 - Remove the CSRF token via browser inspect element.  
 ![Delete element - csrf](https://github.com/user-attachments/assets/1aa5ff64-0ea3-4d94-a27f-8a1825e5bdc0)  
 
-- Submit a valid password change request and verify that it is rejected with a 403 Forbidden response.  
+- Submit a valid password change request and verify that it is rejected with a `403 Forbidden` response.  
 ![Force change password with no csrf response](https://github.com/user-attachments/assets/63dda5f6-484e-405b-9518-ab7adfa6216b)  
 
 **Note**: If a user manually removes the CSRF token from the request (e.g., via browser developer tools), the system will detect the missing token and reject the request with a `403 Forbidden` error, ensuring protection against cross-site request forgery attacks.  
