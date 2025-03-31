@@ -9,39 +9,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.yoanesber.form_auth_demo.entity.CustomUserDetails;
-import com.yoanesber.form_auth_demo.service.HelperService;
-
 @Controller
 public class CustomErrorController implements ErrorController {
 
-    private final HelperService helperService;
+    @Value("${error-403-page}")
+    private String error403Page;
 
-    @Value("${error-page-403}")
-    private String errorPage403;
+    @Value("${error-404-page}")
+    private String error404Page;
 
-    @Value("${error-page-404}")
-    private String errorPage404;
+    @Value("${error-415-page}")
+    private String error415Page;
 
-    @Value("${error-page-415}")
-    private String errorPage415;
-
-    @Value("${error-page-500}")
-    private String errorPage500;
-
-    public CustomErrorController(HelperService helperService) {
-        this.helperService = helperService;
-    }
+    @Value("${error-500-page}")
+    private String error500Page;
 
     // to display error page according to error status code
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
-        // Get principal from session
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
-
-        // Set some attributes
-        model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
-
         // Get the error status code
         String status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString();
 
@@ -49,62 +34,50 @@ public class CustomErrorController implements ErrorController {
             Integer statusCode = Integer.valueOf(status);
 
             if (statusCode == HttpStatus.FORBIDDEN.value())
-                return errorPage403;
+                return error403Page;
             else if (statusCode == HttpStatus.NOT_FOUND.value())
-                return errorPage404;
+                return error404Page;
             else if (statusCode == HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
-                return errorPage415;
-            else return errorPage500;
+                return error415Page;
+            else return error500Page;
         }
 
-        return errorPage500;
+        return error500Page; // Default to 500 error page if status code is not found
     }
 
     // to display http error 403
     @RequestMapping("/error/403")
     public String handleError403(HttpServletRequest request, Model model) {
-        // Get principal from session
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
 
-        // Set some attributes
-        model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
-        
-        return errorPage403;
+        // Add some custom attributes to the model if needed
+
+        return error403Page;
     }
 
     // to display http error 404
     @RequestMapping("/error/404")
     public String handleError404(HttpServletRequest request, Model model) {
-        // Get principal from session
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
 
-        // Set some attributes
-        model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
-        
-        return errorPage404;
+        // Add some custom attributes to the model if needed
+
+        return error404Page;
     }
 
     // to display http error 415
     @RequestMapping("/error/415")
     public String handleError415(HttpServletRequest request, Model model) {
-        // Get principal from session
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
 
-        // Set some attributes
-        model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
-        
-        return errorPage415;
+        // Add some custom attributes to the model if needed
+
+        return error415Page;
     }
 
     // to display http error 500
     @RequestMapping("/error/500")
     public String handleError500(HttpServletRequest request, Model model) {
-        // Get principal from session
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
 
-        // Set some attributes
-        model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
-        
-        return errorPage500;
+        // Add some custom attributes to the model if needed
+
+        return error500Page;
     }
 }

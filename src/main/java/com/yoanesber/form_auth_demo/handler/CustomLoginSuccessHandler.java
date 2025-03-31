@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 import java.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -15,22 +16,27 @@ import org.springframework.stereotype.Component;
 
 import com.yoanesber.form_auth_demo.entity.CustomUserDetails;
 import com.yoanesber.form_auth_demo.service.LoginAttemptService;
+import com.yoanesber.form_auth_demo.service.SessionService;
 
 @Component
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final LoginAttemptService loginAttemptService;
+    @Autowired
+    private LoginAttemptService loginAttemptService;
+
+    @Autowired
+    private SessionService sessionService;
+
     private static final int MAX_INACTIVE_INTERVAL = 60 * 60; // 1 hour
 
     @Value("${login-success-url}")
     private String loginSuccessUrl;
 
-    @Value("${logout-url}")
-    private String logoutUrl;
+    @Value("${error-403-url}")
+    private String error403Url;
 
-    public CustomLoginSuccessHandler(LoginAttemptService loginAttemptService) {
-        this.loginAttemptService = loginAttemptService;
-    }
+    @Value("${error-500-url}")
+    private String error500Url;
 
     // Redirect to the dashboard page after successful login
     // Set session attributes
@@ -45,27 +51,41 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             if (session != null) {
                 String userName = this.getPrincipalUserName(authentication);
 
+                // Manually invalidate all sessions for the user
+                // This is to ensure that the user is logged out from all other sessions
+                sessionService.invalidateOtherSessions(userName, session.getId());
+
                 // Set session inactive interval
-                session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL);
+                sessionService.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL, session);
                 
                 // Set session attributes
-                session.setAttribute("userName", userName);
-                session.setAttribute("userRole", this.getUserRole(authentication));
-                session.setAttribute("lastLogin", this.getLastLogin(authentication));
-                session.setAttribute("ipAddress", this.getIpAddress(request));
+                sessionService.setSessionAttribute("userName", userName, session);
+                sessionService.setSessionAttribute("userRole", this.getUserRole(authentication), session);
+                sessionService.setSessionAttribute("ipAddress", this.getIpAddress(request), session);
 
+                Instant lastLogin = this.getLastLogin(authentication);
+                if (lastLogin != null) {
+                    sessionService.setSessionAttribute("lastLogin", lastLogin, session);
+                } 
+                
                 // Remove the login attempt from the cache
                 loginAttemptService.loginSucceeded(userName);
+
+                // Clear the authentication attributes if any
+                clearAuthenticationAttributes(request);
+
+                // Redirect to the login success URL
+                response.sendRedirect(loginSuccessUrl);
+                return;
+            } else {
+                // If session is null, redirect to forbidden page
+                response.sendRedirect(error403Url);
+                return;
             }
-
-            // Clear the authentication attributes if any
-            clearAuthenticationAttributes(request);
-
-            // Redirect to the login success URL
-            response.sendRedirect(loginSuccessUrl);
         } catch (Exception e) {
-            // Redirect to the logout URL if an error occurs
-            response.sendRedirect(logoutUrl);
+            // Redirect to the error page if any exception occurs
+            response.sendRedirect(error500Url);
+            return;
         }
     }
 
@@ -125,6 +145,6 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
 
         // Remove the authentication exception attribute
-        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        sessionService.removeSessionAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, session);
     }
 }

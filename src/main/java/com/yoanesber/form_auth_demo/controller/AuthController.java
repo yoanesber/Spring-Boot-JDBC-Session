@@ -12,22 +12,32 @@ import com.yoanesber.form_auth_demo.entity.CustomUserDetails;
 import com.yoanesber.form_auth_demo.entity.User;
 import com.yoanesber.form_auth_demo.service.HelperService;
 import com.yoanesber.form_auth_demo.service.UserService;
+import com.yoanesber.form_auth_demo.service.SessionService;
 
 @Controller
 public class AuthController {
 
     private final HelperService helperService;
     private final UserService userService;
+    private final SessionService sessionService;
 
     @Value("${login-url}")
     private String loginUrl;
 
-    @Value("${logout-url}")
-    private String logoutUrl;
+    @Value("${login-success-url}")
+    private String loginSuccessUrl;
 
-    public AuthController(HelperService helperService, UserService userService) {
+    @Value("${error-403-url}")
+    private String error403Url;
+
+    @Value("${error-500-url}")
+    private String error500Url;
+
+    public AuthController(HelperService helperService, 
+        UserService userService, SessionService sessionService) {
         this.helperService = helperService;
         this.userService = userService;
+        this.sessionService = sessionService;
     }
 
     // Redirect to login page
@@ -40,6 +50,7 @@ public class AuthController {
     @GetMapping("/login")
     public String performLogin(@RequestParam(value = "error", required = false) String error, 
         @RequestParam(value = "errorMsg", required = false) String errorMessage, 
+        HttpServletRequest request,
         Model model) {
 
         if (error != null && !error.isBlank()) {
@@ -48,6 +59,20 @@ public class AuthController {
             if (errorMessage != null)
                 model.addAttribute("errorMessage", errorMessage);
             else model.addAttribute("errorMessage", "Invalid username or password");
+        } else {
+            try {
+                // Get principal from session
+                final HttpSession session = request.getSession(false);
+                CustomUserDetails userSession = sessionService.getPrincipalFromSession(session);
+
+                if (userSession != null) {
+                    // if user session is not null, redirect to dashboard page
+                    return "redirect:" + loginSuccessUrl;
+                } 
+            } catch (Exception e) {
+                // if an error occurs, redirect to error page
+                return "redirect:" + error500Url;
+            }
         }
 
         return "LoginPage";
@@ -60,7 +85,7 @@ public class AuthController {
         try {
             // Get principal from session
             final HttpSession session = request.getSession(false);
-            CustomUserDetails userSession = helperService.getPrincipalFromSession(session);
+            CustomUserDetails userSession = sessionService.getPrincipalFromSession(session);
 
             if ( userSession != null) {
                 // Check if last login is not null then set the attributes
@@ -77,7 +102,7 @@ public class AuthController {
                     User loggedInUser = userService.updateLastLogin(userSession.getUsername());
 
                     // set the last login time in the session
-                    session.setAttribute("lastLogin", loggedInUser.getLastLogin());
+                    sessionService.setSessionAttribute("lastLogin", loggedInUser.getLastLogin(), session);
 
                     return "DahsboardPage";
                 } else {
@@ -87,13 +112,12 @@ public class AuthController {
                     return "redirect:/force-change-password";
                 }
             } else {
-                // if userSession is null, it means the user is not authenticated
-                // so redirect to login page
-                return "redirect:" + logoutUrl;
+                // if userSession is null, redirect to forbidden page
+                return "redirect:" + error403Url;
             }
         } catch (Exception e) {
-            // if an error occurs, redirect to login page
-            return "redirect:" + logoutUrl;
+            // if an error occurs, redirect to error page
+            return "redirect:" + error500Url;
         }
     }
 }

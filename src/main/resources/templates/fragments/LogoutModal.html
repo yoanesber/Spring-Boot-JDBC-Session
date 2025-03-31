@@ -10,8 +10,10 @@
             </div>
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="#" id="_logout">Logout</a>
+                <form th:action="@{/perform-logout}" method="POST">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Logout</button>
+                </form>
             </div>
         </div>
     </div>

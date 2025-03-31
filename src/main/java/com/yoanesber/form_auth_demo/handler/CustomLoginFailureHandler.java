@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -15,16 +16,14 @@ import com.yoanesber.form_auth_demo.service.UserService;
 @Component
 public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 
-    private final UserService userService;
-    private final LoginAttemptService loginAttemptService;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private LoginAttemptService loginAttemptService;
 
     @Value("${login-url}")
     private String loginUrl;
-
-    public CustomLoginFailureHandler(UserService userService, LoginAttemptService loginAttemptService) {
-        this.userService = userService;
-        this.loginAttemptService = loginAttemptService;
-    }
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, 

@@ -73,4 +73,17 @@ public class CustomUserDetails implements UserDetails {
         return this.user.getUserRoles().stream().map(userRole -> new SimpleGrantedAuthority(userRole.getRole().getName()))
             .collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "CustomUserDetails {" +
+                "user=" + user +
+                ", username='" + getUsername() + '\'' +
+                ", password='" + getPassword() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", lastLogin=" + getLastLogin() +
+                '}';
+    }
 }

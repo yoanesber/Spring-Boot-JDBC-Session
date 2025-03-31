@@ -14,35 +14,37 @@ import com.yoanesber.form_auth_demo.dto.ChangePasswordDTO;
 import com.yoanesber.form_auth_demo.entity.CustomUserDetails;
 import com.yoanesber.form_auth_demo.entity.User;
 import com.yoanesber.form_auth_demo.service.ChangePasswordService;
-import com.yoanesber.form_auth_demo.service.HelperService;
-
+import com.yoanesber.form_auth_demo.service.SessionService;
 
 @Controller
 public class ChangePasswordController {
 
-    private final HelperService helperService;
     private final ChangePasswordService changePasswordService;
+    private final SessionService sessionService;
 
     private static final String SUCCESS_MESSAGE = "Password changed successfully. Please login again.";
 
-    @Value("${logout-url}")
-    private String logoutUrl;
+    @Value("${error-403-url}")
+    private String error403Url;
+
+    @Value("${error-500-url}")
+    private String error500Url;
 
     public ChangePasswordController(ChangePasswordService changePasswordService, 
-        HelperService helperService) {
+        SessionService sessionService) {
         this.changePasswordService = changePasswordService;
-        this.helperService = helperService;
+        this.sessionService = sessionService;
     }
 
     @GetMapping("/force-change-password")
     public String forceChange(HttpServletRequest request, @ModelAttribute ChangePasswordDTO changePasswordObj, Model model) {
         try {
             // Get principal from session
-            CustomUserDetails userSession = helperService.getPrincipalFromSession(request.getSession(false));
+            CustomUserDetails userSession = sessionService.getPrincipalFromSession(request.getSession(false));
 
             if ( userSession == null) {
-                // If user session is null, force logout
-                return "redirect:" + logoutUrl;
+                // If user session is null, redirect to forbidden page
+                return "redirect:" + error403Url;
             }
             
             // Set attributes for the model
@@ -51,8 +53,8 @@ public class ChangePasswordController {
 
             return "ForceChangePasswordPage";
         } catch (Exception e) {
-            // If any exception occurs, force logout
-            return "redirect:" + logoutUrl;
+            // If any exception occurs, redirect to error page
+            return "redirect:" + error500Url;
         }
     }
 
@@ -61,7 +63,7 @@ public class ChangePasswordController {
     @ModelAttribute ChangePasswordDTO changePasswordObj, RedirectAttributes redirectAttributes, Model model) {
         // Get principal from session
         final HttpSession session = request.getSession(false);
-        CustomUserDetails userSession = helperService.getPrincipalFromSession(session);
+        CustomUserDetails userSession = sessionService.getPrincipalFromSession(session);
             
         // Get user id from session
         Long userId = userSession.getId();
@@ -71,7 +73,7 @@ public class ChangePasswordController {
             User updatedUser = changePasswordService.forceChange(changePasswordObj.getPassword(), changePasswordObj.getConfirmPassword(), userId);
 
             // set the last login time in the session
-            session.setAttribute("lastLogin", updatedUser.getLastLogin());
+            sessionService.setSessionAttribute("lastLogin", updatedUser.getLastLogin(), session);
 
             // Set some attributes to be displayed on the page
             model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());

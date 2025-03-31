@@ -84,11 +84,15 @@ PERMIT_API_REQUEST_URL=/api/**
 PERMIT_STATIC_REQUEST_URL=/static/**
 CSRF_IGNORED_REQUEST_URL=/login
 
+# Session properties
+MAXIMUM_SESSION=1
+MAX_SESSION_PREVENTS_LOGIN=true
+
 # Login & logout properties
 LOGIN_URL=/login
 LOGIN_SUCCESS_URL=/dashboard
 LOGOUT_URL=/perform-logout
-LOGOUT_SUCCESS_URL=/login?logout
+LOGOUT_SUCCESS_URL="/login?logoutSuccess=true"
 
 # Error page properties
 ERROR_PAGE_403=error/403
@@ -124,6 +128,10 @@ permit-user-request-url=${PERMIT_USER_REQUEST_URL}
 permit-api-request-url=${PERMIT_API_REQUEST_URL}
 permit-static-request-url=${PERMIT_STATIC_REQUEST_URL}
 csrf-ignored-request-url=${CSRF_IGNORED_REQUEST_URL}
+
+# Session properties
+maximum-session=${MAXIMUM_SESSION}
+max-session-prevents-login=${MAX_SESSION_PREVENTS_LOGIN}
 
 # Login & logout properties
 login-url=${LOGIN_URL}

@@ -46,6 +46,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
     @Override
     public void loginSucceeded(String userName) {
         Assert.hasText(userName, "The userName cannot be null");
+        
         attemptsCache.remove(userName);
     }
 }

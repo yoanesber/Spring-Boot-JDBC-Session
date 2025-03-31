@@ -8,6 +8,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -19,24 +21,24 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.yoanesber.form_auth_demo.handler.CustomLoginFailureHandler;
 import com.yoanesber.form_auth_demo.handler.CustomLoginSuccessHandler;
 import com.yoanesber.form_auth_demo.handler.CustomLogoutHandler;
 import com.yoanesber.form_auth_demo.service.CustomUserDetailsService;
-import com.yoanesber.form_auth_demo.service.LoginAttemptService;
-import com.yoanesber.form_auth_demo.service.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     
     private final CustomUserDetailsService customUserDetailsService;
-    private final LoginAttemptService loginAttemptService;
-    private final UserService userService;
+
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
-    private static final String error403Url = "/error/403";
+
+    @Value("${error-403-url}")
+    private String error403Url;
 
     @Value("${csrf-repository-name}")
     private String CSRF_REPOSITORY_NAME;
@@ -65,12 +67,14 @@ public class SecurityConfig {
     @Value("${logout-success-url}")
     private String logoutSuccessUrl;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, 
-        LoginAttemptService loginAttemptService, 
-        UserService userService) {
+    @Value("${maximum-session}")
+    private int maximumSession;
+
+    @Value("${max-session-prevents-login}")
+    private boolean maxSessionPreventsLogin;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
-        this.loginAttemptService = loginAttemptService;
-        this.userService = userService;
     }
 
     @Bean
@@ -116,14 +120,27 @@ public class SecurityConfig {
         return repository;
     }
 
+    // Use HttpSessionEventPublisher to track session events
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();  // Required for session event tracking
+    }
+
+    // Use SessionRegistry to track active sessions
+    // This is used to prevent multiple sessions for the same user
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
     @Bean
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler(){
-        return new CustomLoginSuccessHandler(this.loginAttemptService);
+        return new CustomLoginSuccessHandler();
     }
 
     @Bean
     public AuthenticationFailureHandler customAuthenticationFailureHandler(){
-        return new CustomLoginFailureHandler(this.userService, this.loginAttemptService);
+        return new CustomLoginFailureHandler();
     }
 
     @Bean
@@ -141,16 +158,17 @@ public class SecurityConfig {
         http
             .sessionManagement(session -> session
                 .sessionFixation(sessionFixation -> sessionFixation
-                    .newSession()) // Create a new session on login
-                .maximumSessions(1) // Set maximum sessions to 1
-                .maxSessionsPreventsLogin(true) // Prevents login if maximum sessions are reached
+                    .migrateSession()) // Migrate session on login to prevent session fixation attacks
+                .maximumSessions(maximumSession) // Set maximum sessions to 1
+                .maxSessionsPreventsLogin(maxSessionPreventsLogin) // Prevents login if maximum sessions are reached
                 .expiredUrl(loginUrl + "?sessionExpired=true") // Redirect to login page if session expired
+                .sessionRegistry(sessionRegistry())
             )
             .authenticationProvider(authenticationProvider())
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny()) 
                 .cacheControl(cache -> cache.disable())
-                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://source.unsplash.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"))
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://source.unsplash.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"))
             )
             .csrf((csrf) -> csrf
                 .csrfTokenRepository(httpSessionCsrfTokenRepository())
@@ -171,7 +189,6 @@ public class SecurityConfig {
                     .permitAll())
             .logout(logout -> 
                 logout.logoutUrl(logoutUrl)
-                    .logoutSuccessUrl(logoutSuccessUrl)
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID")
                     .logoutSuccessHandler(customLogoutSuccessHandler())
