@@ -1,7 +1,7 @@
 # Spring Web Application with JDBC Session
 
 ## 📖 Overview
-This project is a Spring web application demonstrating **Form-Based Authentication** with **JDBC Session**. User sessions are stored in a **PostgreSQL** database. The application implements **user authentication, password management, and account security** features.  
+This project is a Spring web application demonstrating **Form-Based Authentication** with **JDBC Session**. User sessions are stored in a **PostgreSQL** database. The application implements **user authentication, password management, session management, and account security** features.  
 
 Additionally, this project uses **SB Admin Bootstrap Template** for the frontend UI, enhancing the user experience with a modern, responsive design.
 
@@ -21,8 +21,9 @@ Spring Session JDBC is used to persist user session data in the PostgreSQL datab
 - **Dashboard** – Authenticated users are redirected to a dashboard after a successful login.
 - **CSRF Protection** – CSRF tokens are stored in `HttpSession` to prevent **cross-site request forgery** attacks.
 - **Strict Content Security Policy (CSP)** – Enforces a strict content security policy to mitigate **XSS** attacks.
+- **Active Session Management** – Users with admin privileges can view active sessions and terminate any session if needed.
 
-### 🔐 Authentication Flow
+### 🔐 Authentication
 1. Users log in via the login form.
 2. Credentials are verified using `DaoAuthenticationProvider`.
 3. On first login, users are forced to change their password.
@@ -89,16 +90,21 @@ MAXIMUM_SESSION=1
 MAX_SESSION_PREVENTS_LOGIN=true
 
 # Login & logout properties
+INDEX_URL=/
 LOGIN_URL=/login
 LOGIN_SUCCESS_URL=/dashboard
 LOGOUT_URL=/perform-logout
 LOGOUT_SUCCESS_URL="/login?logoutSuccess=true"
 
 # Error page properties
-ERROR_PAGE_403=error/403
-ERROR_PAGE_404=error/404
-ERROR_PAGE_415=error/415
-ERROR_PAGE_500=error/500
+ERROR_403_URL=/error/403
+ERROR_404_URL=/error/404
+ERROR_415_URL=/error/415
+ERROR_500_URL=/error/500
+ERROR_403_PAGE=error/403
+ERROR_404_PAGE=error/404
+ERROR_415_PAGE=error/415
+ERROR_500_PAGE=error/500
 ```
 
 Example `application.properties` file content:
@@ -134,16 +140,21 @@ maximum-session=${MAXIMUM_SESSION}
 max-session-prevents-login=${MAX_SESSION_PREVENTS_LOGIN}
 
 # Login & logout properties
+index-url=${INDEX_URL}
 login-url=${LOGIN_URL}
 login-success-url=${LOGIN_SUCCESS_URL}
 logout-url=${LOGOUT_URL}
 logout-success-url=${LOGOUT_SUCCESS_URL}
 
 # Error page properties
-error-page-403=${ERROR_PAGE_403}
-error-page-404=${ERROR_PAGE_404}
-error-page-415=${ERROR_PAGE_415}
-error-page-500=${ERROR_PAGE_500}
+error-403-url=${ERROR_403_URL}
+error-404-url=${ERROR_404_URL}
+error-415-url=${ERROR_415_URL}
+error-500-url=${ERROR_500_URL}  
+error-403-page=${ERROR_403_PAGE}
+error-404-page=${ERROR_404_PAGE}
+error-415-page=${ERROR_415_PAGE}
+error-500-page=${ERROR_500_PAGE}
 
 # Thymeleaf properties
 spring.thymeleaf.mode=HTML
@@ -168,9 +179,8 @@ CREATE TABLE IF NOT EXISTS your_schema.roles
 
 -- feed data roles
 INSERT INTO your_schema.roles ("name") VALUES
-	 ('ROLE_USER'),
-	 ('ROLE_MODERATOR'),
-	 ('ROLE_ADMIN');
+    ('ROLE_ADMIN'),
+    ('ROLE_USER');
 
 
 -- create table users
@@ -202,10 +212,18 @@ CREATE TABLE IF NOT EXISTS your_schema.users
 );
 
 -- feed data users
--- both superadmin and channel1 password is `P@ssw0rd`
+-- all users' password: `P@ssw0rd`
 INSERT INTO your_schema.users (username,"password",email,firstname,lastname,is_enabled,is_account_non_expired,is_account_non_locked,is_credentials_non_expired,is_deleted,account_expiration_date,credentials_expiration_date,last_login,user_type,created_by,created_date,updated_by,updated_date) VALUES
-	 ('superadmin','$2a$10$71wrLlzlkJ/54ZWDwA6KiegFX0naXg.T2zvKB2EbyqdS1Yl7Cwt1W','superadmin@youremail.com','Super','Admin',true,true,true,true,false,'2025-04-23 21:52:38+07','2025-02-28 01:58:35.835127+07','2025-02-11 22:54:32.816+07','USER_ACCOUNT','system','2024-09-04 03:42:58.847+07','system','2024-11-28 01:58:35.835+07'),
-	 ('channel1','$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa','channel1@youremail.com','Channel','One',true,true,true,true,false,'2025-07-14 19:50:56.880054+07','2025-05-11 22:57:25.611336+07','2025-02-10 14:53:04.704+07','SERVICE_ACCOUNT','superadmin','2024-09-04 03:44:48.827+07','superadmin','2025-02-11 22:57:25.609+07');
+    ('superadmin','$2a$10$71wrLlzlkJ/54ZWDwA6KiegFX0naXg.T2zvKB2EbyqdS1Yl7Cwt1W','superadmin@youremail.com','Super','Admin',true,true,true,true,false,'2025-04-23 21:52:38+07','2025-02-28 01:58:35.835127+07','2025-02-11 22:54:32.816+07','USER_ACCOUNT','system','2024-09-04 03:42:58.847+07','system','2024-11-28 01:58:35.835+07'),
+    ('johndoe', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'johndoe@youremail.com', 'John', 'Doe', true, true, true, true, false, '2026-06-15 12:45:00.000', '2025-12-30 08:00:00.000', '2025-02-20 14:00:00.000', 'USER_ACCOUNT', 'superadmin', '2024-10-01 10:00:00.000', 'superadmin', '2024-12-15 09:00:00.000'),
+    ('janedoe', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'janedoe@youremail.com', 'Jane', 'Doe', true, true, true, true, false, '2026-05-10 08:30:00.000', '2025-11-20 12:00:00.000', '2025-03-05 09:30:00.000', 'USER_ACCOUNT', 'superadmin', '2024-08-20 15:20:00.000', 'superadmin', '2024-12-05 10:10:00.000'),
+    ('alicewong', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'alicewong@youremail.com', 'Alice', 'Wong', true, true, true, true, false, '2025-07-01 14:20:00.000', '2025-12-10 10:10:10.000', '2025-04-22 18:45:00.000', 'USER_ACCOUNT', 'superadmin', '2024-09-10 17:30:00.000', 'superadmin', '2024-11-30 11:45:00.000'),
+    ('robertbrown', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'robertbrown@email.com', 'Robert', 'Brown', true, true, true, true, false, '2025-09-12 23:59:59.000', '2026-01-01 06:30:00.000', '2025-01-15 21:15:00.000', 'USER_ACCOUNT', 'superadmin', '2024-07-05 05:00:00.000', 'superadmin', '2024-12-22 12:45:00.000'),
+    ('emilyclark', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'emilyclark@youremail.com', 'Emily', 'Clark', true, true, true, true, false, '2025-10-25 16:00:00.000', '2025-09-28 11:30:00.000', '2025-05-14 07:00:00.000', 'USER_ACCOUNT', 'superadmin', '2024-06-30 14:10:00.000', 'superadmin', '2024-11-18 18:20:00.000'),
+    ('davidsmith', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'davidsmith@youremail.com', 'David', 'Smith', true, true, true, true, false, '2025-03-14 19:00:00.000', '2025-04-05 09:45:00.000', '2024-12-10 20:30:00.000', 'USER_ACCOUNT', 'superadmin', '2024-05-25 08:00:00.000', 'superadmin', '2024-10-29 13:15:00.000'),
+    ('michaeljohnson', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'michaeljohnson@youremail.com', 'Michael', 'Johnson', true, true, true, true, false, '2026-02-20 05:30:00.000', '2025-08-15 22:00:00.000', '2025-06-01 12:00:00.000', 'USER_ACCOUNT', 'superadmin', '2024-07-14 03:45:00.000', 'superadmin', '2024-11-10 06:30:00.000'),
+    ('sarahlee', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'sarahlee@youremail.com', 'Sarah', 'Lee', true, true, true, true, false, '2025-12-09 08:45:00.000', '2025-07-11 14:30:00.000', '2025-02-25 17:20:00.000', 'USER_ACCOUNT', 'superadmin', '2024-06-11 21:10:00.000', 'superadmin', '2024-10-05 11:55:00.000'),
+    ('chrisadams', '$2a$10$eP5Sddi7Q5Jv6seppeF93.XsWGY8r4PnsqprWGb5AxsZ9TpwULIGa', 'chrisadams@youremail.com', 'Chris', 'Adams', true, true, true, true, false, '2026-01-01 13:40:00.000', '2025-10-05 19:00:00.000', '2025-04-30 15:10:00.000', 'USER_ACCOUNT', 'superadmin', '2024-08-02 07:30:00.000', 'superadmin', '2024-11-30 16:20:00.000');
 
 -- create table user_roles
 CREATE TABLE IF NOT EXISTS your_schema.user_roles
@@ -224,11 +242,18 @@ CREATE TABLE IF NOT EXISTS your_schema.user_roles
 );
 
 -- feed data user_roles
+-- make sure the ID for ROLE_ADMIN is 1 and the ID for ROLE_USER is 2 in the role table
 INSERT INTO your_schema.user_roles (user_id,role_id) VALUES
 	 (1,1),
-	 (1,2),
-	 (1,3),
-	 (2,3);
+	 (2,2),
+     (3,2),
+     (4,2),
+     (5,2),
+     (6,2),
+     (7,2),
+     (8,2),
+     (9,2),
+     (10,2);
 
 
 -- create table spring_session
@@ -366,13 +391,31 @@ Confirm that the force password change process is completed and the user is redi
 ![spring_session table](https://github.com/user-attachments/assets/92bd9ce9-584a-4afd-bf3c-438c82403b4c)  
 ![spring_session_attributes table](https://github.com/user-attachments/assets/4a653e83-b0e4-4cab-a109-1f9cd829949c)  
 
+8. Test Successful Session Termination  
+- Login as Multiple Users – Open different browsers or incognito windows and log in as different users, including an admin user.  
+- Navigate to Active Sessions Page – Log in as an admin and go to the "Active Sessions" page.  
+- Verify Active Users – Check if all logged-in users (both regular and admin) are listed in the session table.  
+![Image](https://github.com/user-attachments/assets/23c6ab65-a598-4553-9e80-7c3f4699a1ad)  
+
+- Click Terminate Button – Click the "Terminate" action button next to the selected session.  
+- Confirm Termination – If a confirmation modal appears, proceed with confirming the termination.  
+![Image](https://github.com/user-attachments/assets/49e3a894-937a-44f7-af7d-130920fca252)  
+
+- Session Still Visible – After confirming termination, the session will still appear in the list. This is expected because termination takes effect when the affected user performs an action on the application.  
+
+- Verify Logout Behavior – On the terminated user's browser session, try navigating or performing any action. The user should be automatically redirected to `/login?sessionExpired=true`.  
+![Image](https://github.com/user-attachments/assets/1600e6aa-1e85-4ebc-a5f1-e49de388680a)  
+![Image](https://github.com/user-attachments/assets/c88a7539-3162-47fe-8dff-9abb0604fcfd)  
+
+- Verify Session Removal – Ensure the terminated session is no longer listed.  
+![Image](https://github.com/user-attachments/assets/f30ae57b-d0d9-4e28-913f-16d07c3b7562)  
+
 ---
 
 ## 📝 Notes & Future Enhancements
 This project provides a robust authentication system using **Spring Security with JDBC Session**, ensuring session persistence in the database while enforcing security policies such as CSRF protection and account lockout mechanisms. Below are some important notes about the implementation and possible future enhancements.  
 To further improve security and usability, the following features could be added:  
 - **Admin User Management** – Implement an admin panel where administrators can **unlock accounts, extend credentials and account expiration, and enable or disable user accounts**.
-- **Session Monitoring** – Provide an admin panel to view active user sessions stored in the `spring_session` table. Admins should have the ability to terminate specific sessions to enforce security policies.
 - **Automated Email Notifications** – Introduce an email notification service to inform users when their accounts are locked, passwords are changed, or their credentials/accounts are about to expire. This feature could be implemented using an **asynchronous** approach such as **Redis (Publisher/Subscriber)** or a scheduled task to send timely alerts.
 - **Security Logs for Admins** – Implement a logging system that captures security-related events, such as **authentication failures, account status changes, and security-related events**. These logs should be accessible only to administrators for auditing and monitoring purposes.
 ---

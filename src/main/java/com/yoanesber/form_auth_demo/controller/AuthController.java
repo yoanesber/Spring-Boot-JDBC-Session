@@ -91,20 +91,26 @@ public class AuthController {
                 // Check if last login is not null then set the attributes
                 // to be displayed on the dashboard page
                 if (userSession.getLastLogin() != null) {
+                    Boolean hasRoleAdmin = helperService.hasRoleAdmin(userSession);
+
                     model.addAttribute("lastLogin", userSession.getLastLogin());
                     model.addAttribute("fullName", (userSession.getFirstName() + " " + userSession.getLastName()).trim());
                     model.addAttribute("userName", userSession.getUsername());
-                    model.addAttribute("hasRoleAdmin", helperService.hasRoleAdmin(userSession));
-                    model.addAttribute("hasRoleUser", helperService.hasRoleUser(userSession));
                     // add some other attributes...
 
                     // update last login time in the database
                     User loggedInUser = userService.updateLastLogin(userSession.getUsername());
 
-                    // set the last login time in the session
+                    // set the last login time in the current session
                     sessionService.setSessionAttribute("lastLogin", loggedInUser.getLastLogin(), session);
 
-                    return "DahsboardPage";
+                    if (hasRoleAdmin) {
+                        model.addAttribute("hasRoleAdmin", true);
+                        return "DahsboardPage";
+                    } else {
+                        model.addAttribute("hasRoleUser", true);
+                        return "HomePage";
+                    }
                 } else {
                     // if last login is null, it means the user has not logged in before
                     // so make it the first login, and force the user to change the password

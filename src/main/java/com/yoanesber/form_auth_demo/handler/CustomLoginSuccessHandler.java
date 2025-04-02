@@ -53,7 +53,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
                 // Manually invalidate all sessions for the user
                 // This is to ensure that the user is logged out from all other sessions
-                sessionService.invalidateOtherSessions(userName, session.getId());
+                sessionService.invalidateOldSessions(userName, session.getId());
 
                 // Set session inactive interval
                 sessionService.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL, session);

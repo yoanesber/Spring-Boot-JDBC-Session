@@ -159,16 +159,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionFixation(sessionFixation -> sessionFixation
                     .migrateSession()) // Migrate session on login to prevent session fixation attacks
-                .maximumSessions(maximumSession) // Set maximum sessions to 1
-                .maxSessionsPreventsLogin(maxSessionPreventsLogin) // Prevents login if maximum sessions are reached
-                .expiredUrl(loginUrl + "?sessionExpired=true") // Redirect to login page if session expired
-                .sessionRegistry(sessionRegistry())
+                .sessionConcurrency(concurrency -> 
+                    concurrency
+                        .maximumSessions(maximumSession) // Set maximum sessions per user
+                        .maxSessionsPreventsLogin(maxSessionPreventsLogin) // Prevent login if session exists
+                        .sessionRegistry(sessionRegistry()) // Enable session tracking
+                        .expiredUrl(loginUrl + "?sessionExpired=true") // Redirect to login page if session expired
+                )
             )
             .authenticationProvider(authenticationProvider())
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny()) 
                 .cacheControl(cache -> cache.disable())
-                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://source.unsplash.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"))
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://source.unsplash.com; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;"))
             )
             .csrf((csrf) -> csrf
                 .csrfTokenRepository(httpSessionCsrfTokenRepository())
